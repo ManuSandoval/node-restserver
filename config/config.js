@@ -8,9 +8,8 @@ process.env.PORT = process.env.PORT || 3000;
 //NODE_ENV es una variable de Heroku
 process.env.NODE_ENV = process.env.NODE_ENV || "dev"; //si no existe => en desarrollo
 //===========BASE DE DATOS===============
-const URL_REMOTA =
-  "mongodb+srv://manucosa:EaXoXerucp6EYRHW@cluster0-tbyst.mongodb.net/cafe";
-const URL_LOCAL = "mongodb://localhost:27017/cafe";
-let urlDB;
-process.env.NODE_ENV === "dev" ? (urlDB = URL_LOCAL) : (urlDB = URL_REMOTA);
-process.env.URLDB = URL_REMOTA;
+
+const MONGO_LOCAL = "mongodb://localhost:27017/cafe";
+process.env.NODE_ENV === "dev"
+  ? (process.env.URL_DB = MONGO_LOCAL)
+  : (process.env.URL_DB = MONGO_URI);

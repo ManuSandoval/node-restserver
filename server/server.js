@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(require("../routes/usuario"));
 
 mongoose.connect(
-  process.env.URLDB, //SI LA BD NO EXISTE LA CREA
+  process.env.URL_DB, //SI LA BD NO EXISTE LA CREA
   mongooseOptions,
   (err) => {
     err
