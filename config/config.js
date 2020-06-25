@@ -10,6 +10,9 @@ process.env.NODE_ENV = process.env.NODE_ENV || "dev"; //si no existe => en desar
 //===========BASE DE DATOS===============
 
 const MONGO_LOCAL = "mongodb://localhost:27017/cafe";
+let URL_DB;
 process.env.NODE_ENV === "dev"
-  ? (process.env.URL_DB = MONGO_LOCAL)
-  : (process.env.URL_DB = MONGO_URI);
+  ? (URL_DB = process.env.MONGO_LOCAL)
+  : (URL_DB = process.env.MONGO_URI);
+  
+process.env.URL_DB = URL_DB;
