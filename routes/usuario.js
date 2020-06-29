@@ -1,11 +1,13 @@
 const express = require("express");
+const app = express();
 const bcrypt = require("bcrypt");
 const Usuario = require("../models/Usuario");
-const { query } = require("express");
-const { findByIdAndDelete } = require("../models/Usuario");
-const app = express();
+const {
+  verificarToken,
+  verificarAdminRole,
+} = require("../middlewares/autenticacion");
 
-app.get("/usuario", (req, res) => {
+app.get("/usuario", verificarToken, (req, res) => {
   let desde = Number(req.query.desde) || 0; //NO OLVIDAR CONVERTIR A NUMERO
   let maxRegistros = Number(req.query.maxRegistros) || 5;
 
@@ -32,7 +34,7 @@ app.get("/usuario", (req, res) => {
     });
 });
 
-app.post("/usuario", async (req, res) => {
+app.post("/usuario", [verificarToken, verificarAdminRole], async (req, res) => {
   let { nombre, email, password, role } = req.body;
   let usuarioNuevo = new Usuario({
     nombre,
@@ -53,7 +55,7 @@ app.post("/usuario", async (req, res) => {
   });
 });
 
-app.put("/usuario/:id", async (req, res) => {
+app.put("/usuario/:id", verificarToken, (req, res) => {
   const { nombre, email, img, role, estado = true } = req.body;
   const usuarioActualizado = {
     nombre,
@@ -62,8 +64,7 @@ app.put("/usuario/:id", async (req, res) => {
     role,
     estado,
   };
-  console.log(usuarioActualizado);
-  await Usuario.findByIdAndUpdate(
+  Usuario.findByIdAndUpdate(
     req.params.id, //id
     usuarioActualizado, //cuerpo
     { new: true, runValidators: true, context: "query" }, //devuelve el objeto actualizado, y corre
@@ -77,26 +78,30 @@ app.put("/usuario/:id", async (req, res) => {
   );
 });
 
-app.delete("/usuario/:id", async (req, res) => {
-  let cambioEstado = false;
-  await Usuario.findByIdAndUpdate(
-    req.params.id,
-    { estado: cambioEstado },
-    { new: true },
-    (error, usuarioEliminado) => {
-      usuarioEliminado
-        ? res.json({
-            ok: true,
-            usuarioEliminado,
-          })
-        : res.status(400).json({
-            ok: false,
-            error: {
-              message: error || "No se encontró un usuario con ese id",
-            },
-          });
-    }
-  );
-});
+app.delete(
+  "/usuario/:id",
+  [verificarToken, verificarAdminRole],
+  async (req, res) => {
+    let cambioEstado = false;
+    await Usuario.findByIdAndUpdate(
+      req.params.id,
+      { estado: cambioEstado },
+      { new: true },
+      (error, usuarioEliminado) => {
+        usuarioEliminado
+          ? res.json({
+              ok: true,
+              usuarioEliminado,
+            })
+          : res.status(400).json({
+              ok: false,
+              error: {
+                message: error || "No se encontró un usuario con ese id",
+              },
+            });
+      }
+    );
+  }
+);
 
 module.exports = app;

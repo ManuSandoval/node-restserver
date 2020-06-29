@@ -18,7 +18,8 @@ app.use(bodyParser.urlencoded({ extended: false })); //.use se usa para definir 
 //parsea application/json
 app.use(bodyParser.json());
 
-app.use(require("../routes/usuario"));
+//conf global de rutas
+app.use(require("../routes/indexRoutes"));
 
 mongoose.connect(
   process.env.URL_DB, //SI LA BD NO EXISTE LA CREA
