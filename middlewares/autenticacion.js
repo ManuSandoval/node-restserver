@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const verificarToken = (req, res, next) => {
   const token = req.get("token");
-  if (token)
+  if (token) {
     jwt.verify(token, process.env.SECRET_KEY, (err, payloadDecoded) => {
       if (err) return res.status(401).json({ auth: false, err });
       //!err => decodifico del token, el usuario que pasé como payload en el sign
@@ -11,6 +11,12 @@ const verificarToken = (req, res, next) => {
       req.usuario = payloadDecoded.usuario;
       next(); //IMPORTANTISIMO QUE SE LLAME DENTRO DEL VERIFY PORQUE SINO SE VA A EJECUTAR EL NEXT AUNQUE TENGA ERRORES
     });
+  } else {
+    res.status(401).json({
+      ok: false,
+      message: "Token no válido. Inicie sesión nuevamente.",
+    });
+  }
 };
 
 const verificarAdminRole = (req, res, next) => {
