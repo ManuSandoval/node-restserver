@@ -1,0 +1,55 @@
+Hola!, les comparto mi interpretacion del problema:
+Ese error suele suceder en varios escenarios pero uno de los mas comunes ( como en esta pregunta ) es cuando 'resolvemos' una respuesta usando res.json() y no 'abortamos' correctamente la ejecucion del codigo.
+Segun documentaciones, el metodo res.json() envia una respuesta http completa que suele ser:
+El body que pasamos para el cual realiza primero el 'seteo' automatico del header [ res.set() ]  un JSON.stringify() y posterior res.send() con correspondiente cierre de la peticion http [ res.end() ].
+Con el primer res.json() que accionemos dentro de cualquiera de las funciones ( middlewares ) callback de express que manejan el req de la ruta ( end point ) se envia tambien el header y cierre de la conexion http que estabamos procesando; pero no termina la ejecucion sincrona del resto del codigo, entonces si debajo hay otro res.json() ( con o sin status ) o algun res.send() no podran ser procesados  y ocurre el crash que han visto si ese error no es capturado.
+En el marco de esta pregunta el problema ocurre cuando esta asi:
+usuario.save((err, usuarioDB) => {
+    if (err) {
+         res.status(400).json({
+                 ok: false,
+                 err: err
+         });
+    }
+    res.json({
+         ok: true,
+         usuario: usuarioDB
+    });
+});
+porque cualquier error que arroje usuario.save ( ej: un error de validacion de la base de datos ) acciona el if , se ejecuta el res.status(400) que manda el header y comienza el proceso de cerrar el req pero el codigo continua hasta el otro res.json de abajo que intenta enviar otro body pero no puede establecer su respuesta para una peticion que ya fue cerrada o esta en proceso de cierre ( el header ya fue enviado ).
+Cuando incorporan el else  no se ejecutan los 2 res.json() y se soluciona el problema.
+tambiense podia hacer un return dentro del if para evitar que continue, ej:
+if (err) {
+      return res.status(400).json({
+                 ok: false,
+                 err: err
+      });
+}
+
+o tambien:
+if (err) {
+      res.status(400).json({
+                 ok: false,
+                 err: err
+      });
+      return;
+}
+
+hay otros escenarios para la misma causa de crash que enmascaran mas el problema, como cuando un mismo callback de respuesta es llamado 2 veces de forma accidental.
+Aunque lo correcto es identificar la causa del problema en nuestro codigo y corregirlo, mientras ganamos experiencia es un riesgo que no nos demos cuenta de algo asi y crashee el servidor, por lo que una forma de capturar ese error no manejado es 'interceptar' todas las peticiones a nuestra ruta en un middleware que  maneje cualquier error que se nos escape.
+Por ejemplo pondiendo este codigo al final de cada archivo nuestro de rutas, justo antes de module.exports = app;
+// manejar error 400
+app.use((err, req, res, next) => {
+    if (!err) return next();
+    // si hay error indicarlo
+    res.status(400).json({
+            ok: false,
+            err: {
+                code: 400,
+                message: 'Peticion no valida',
+                err: 'BAD_REQUEST'
+            }
+        });
+});
+IMPORTANTE: En Desarrollo deben comentarlo porque necesitamos ver los mensajes de error cuando ocurren, y este codigo los enmascararia sin dejarte ver los errores originales ( que suele ser lo deseado en produccion ).
+

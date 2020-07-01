@@ -15,6 +15,10 @@ process.env.EXPIRES_IN = 60 * 60 * 24 * 30;
 //===========SEED (SECRET_KEY)===============
 process.env.SECRET_KEY = process.env.SECRET_KEY || "este-es-el-seed";
 
+//===========ID GOOGLE (CLIENT_ID)===============
+process.env.CLIENT_ID =
+  process.env.CLIENT_ID ||
+  "710999825579-h7ftiuaofna7kvqvr4pn5akb1pc1lsas.apps.googleusercontent.com";
 //===========BASE DE DATOS===============
 const MONGO_LOCAL = "mongodb://localhost:27017/cafe";
 

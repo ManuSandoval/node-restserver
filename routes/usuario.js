@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
-const bcrypt = require("bcrypt");
+
 const Usuario = require("../models/Usuario");
+const { altaUsuario } = require("../controllers/usuarioController");
 const {
   verificarToken,
   verificarAdminRole,
