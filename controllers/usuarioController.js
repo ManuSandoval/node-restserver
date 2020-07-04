@@ -1,8 +1,12 @@
 const bcrypt = require("bcrypt");
 const Usuario = require("../models/Usuario");
 
+
+
+
 const altaUsuario = async (req, res) => {
   let { nombre, email, password = "byGoogle", role, google = false } = req.body;
+  
   let usuarioNuevo = new Usuario({
     nombre,
     email,
