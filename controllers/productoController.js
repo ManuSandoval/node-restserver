@@ -4,7 +4,7 @@ const CategoriaModel = require("../models/Categoria");
 
 const getProductos = async (req, res) => {
   const desde = Number(req.query.desde) || 0;
-  const maxRegistros = Number(req.query.maxRegistros) || 5;
+  const maxRegistros = Number(req.query.maxRegistros) || 20;
   await ProductoModel.find({ disponible: true })
     .sort("nombre") //ordena
     .populate("usuario", "nombre email") //a partir del campo usuario (idObject) hace un join mostrando nombre & email

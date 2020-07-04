@@ -23,15 +23,13 @@ const loginComun = async (req, res) => {
         message: "Usuario y/o (Contraseña) incorrectos ",
       });
     //si pasó todas las validaciones genero y devuelvo el token
-    let token = jwt.sign({ usuarioBD }, process.env.SECRET_KEY, {
-      expiresIn: process.env.EXPIRES_IN, //30 días
-    }); //si se mantienen iguales c/u de los parametros del sign => se genera siempre
+    let token = generarToken(usuarioBD); //si se mantienen iguales c/u de los parametros del sign => se genera siempre
     //el mismo token en cada login
     res.json({ auth: true, usuario: usuarioBD, token });
   });
 };
 
-const loginGoogle = async (req, res) => {
+const loginGoogle = async (req, res, next) => {
   const usuarioGoogle = req.usuarioGoogle;
   await UsuarioModel.findOne(
     { email: usuarioGoogle.email },
@@ -65,34 +63,41 @@ const loginGoogle = async (req, res) => {
         }
       } else {
         //no existe y se está registrando con google
-        let usuarioNuevo = new UsuarioModel({
-          ...usuarioGoogle,
-          password: "sinContra", //como se registró con google no va a tener contraseña, entonces pongo una ficticia porque el modelo me lo requiere, pero no la encripto, entonces cuando a la vuelta lo decodifique, no va a matchear.
-        });
-        usuarioNuevo.save((err, usuarioBD) => {
-          if (err)
-            return res.status(500).json({
-              auth: false,
-              err,
-            });
-          if (usuarioBD) {
-            const token = jwt.sign({ usuarioBD }, process.env.SECRET_KEY, {
-              expiresIn: process.env.EXPIRES_IN,
-            });
-            res.json({
-              auth: true,
-              message: "Usuario registrado y logueado.",
-              usuarioBD,
-              token,
-            });
-          }
-        });
+        next();
       }
     }
   );
 };
 
+const generarToken = (usuarioBD) =>
+  jwt.sign({ usuarioBD }, process.env.SECRET_KEY, {
+    expiresIn: process.env.EXPIRES_IN,
+  });
+
+const registrarUsuarioGoogle = (req, res) => {
+  new UsuarioModel({
+    ...req.usuarioGoogle,
+    password: "sinContra", //como se registró con google no va a tener contraseña, entonces pongo una ficticia porque el modelo me lo requiere, pero no la encripto, entonces cuando a la vuelta lo decodifique, no va a matchear.
+  }).save((err, usuarioBD) => {
+    if (err)
+      return res.status(500).json({
+        auth: false,
+        err,
+      });
+    if (usuarioBD) {
+      const token = generarToken(usuarioBD);
+      res.json({
+        auth: true,
+        message: "Usuario registrado y logueado.",
+        usuarioBD,
+        token,
+      });
+    }
+  });
+};
+
 module.exports = {
   loginComun,
   loginGoogle,
+  registrarUsuarioGoogle,
 };
