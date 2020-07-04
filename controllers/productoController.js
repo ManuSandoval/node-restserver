@@ -57,7 +57,7 @@ const getUnProducto = async (req, res) => {
 
 const buscarProductosPorFrase = async (req, res) => {
   const desde = Number(req.query.desde) || 0;
-  const maxRegistros = Number(req.query.maxRegistros) || 5;
+  const maxRegistros = Number(req.query.maxRegistros) || 10;
 
   const regex = new RegExp(req.params.fraseBusqueda, "i"); //la "i" es una bandera para decir que no sea caseSensitive
 
