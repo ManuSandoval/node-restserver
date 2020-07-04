@@ -1,10 +1,11 @@
-const express = require("express");
+//NO ESTOY OCUPANDO PORQUE NO ME FUNCIONA
+/* const express = require("express");
 const app = express();
 
-app.use(require("./login"));
+app.use("/login", require("./login"));
 app.use(require("./usuario"));
 
-/* app.use((err, req, res, next) => {
+app.use((err, req, res, next) => {
   if (!err) return next();
   // si hay error indicarlo
   res.status(400).json({
@@ -15,5 +16,6 @@ app.use(require("./usuario"));
       err: "BAD_REQUEST",
     },
   });
-}); */
+}); 
 module.exports = app;
+ */

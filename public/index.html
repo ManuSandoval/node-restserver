@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- /* Seguridad en el ID de cliente
+0
+Jose · Clase 134 · hace 2 meses
+Hola Fernando,
+
+Revisando el código del Rest Server que hemos hecho en esta sección junto con google sign-in, veo que en el index.html, realmente queda expuesto a cualquier usuario en los metas el ID de cliente ( google-signin-client_id ). Esto me parece un problema grave de seguridad, ¿Hay otra forma de hacer para que sea seguro? Al final es directamente google el que nos está diciendo que lo hagamos así, pero me gustaría que me dieses tu opinión al respecto.
+
+Gracias de antemano,
+
+Saludos!
+
+1 respuesta
+Jose Cardenas
+Jose— Profesor asistente 
+hace 2 meses
+0
+Hola Jose.
+
+Así es, en mi opinión google confía en su sistema de autenticación vía correo electrónico para certificar que ciertamente es la persona correcta.
+
+En cuanto a la seguridad de nuestro server, se podría implementar una función que agregue dinámicamente el meta en nuestro index.html y que ClientId provenga del server a través de una peticion http, reforzaría la seguridad con los certificados ssl. */ -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Google Sign-In Demo</title>
@@ -29,7 +50,7 @@
         var id_token = googleUser.getAuthResponse().id_token;
         //Then, send the ID token to your server with an HTTPS POST request:
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/google");
+        xhr.open("POST", "/login/loginGoogle");
         xhr.setRequestHeader(
           "Content-Type",
           "application/x-www-form-urlencoded"
@@ -37,6 +58,7 @@
         xhr.onload = function () {
           console.log("Signed in as: " + xhr.responseText);
         };
+        console.log(id_token);
         xhr.send("idtoken=" + id_token);
       }
     </script>

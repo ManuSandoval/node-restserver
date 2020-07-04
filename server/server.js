@@ -26,7 +26,11 @@ app.use(express.static(path.resolve(__dirname, "../public")));
 //app.use(express.static("public")) ESTO TAMBIÉN FUNCIONA PERO NO SÉ SI PARA TODOS LOS CASOS
 
 //conf global de rutas
-app.use(require("../routes/indexRoutes"));
+app.use("/login", require("../routes/login"));
+app.use("/categoria", require("../routes/categoria"));
+app.use("/producto", require("../routes/producto"));
+app.use("/usuario", require("../routes/usuario"));
+//app.use(require("../routes/indexRoutes")); NO ME FUNCIONA => PONGO TODAS LAS RUTAS ACÁ
 
 mongoose.connect(
   process.env.URL_DB, //SI LA BD NO EXISTE LA CREA
