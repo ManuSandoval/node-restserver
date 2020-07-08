@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
 const mongooseOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -25,11 +26,15 @@ app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, "../public")));
 //app.use(express.static("public")) ESTO TAMBIÉN FUNCIONA PERO NO SÉ SI PARA TODOS LOS CASOS
 
+//para poder subir archivos (useTempFiles : true, evita que se suban vacíos)
+app.use(fileUpload({ useTempFiles: true }));
+
 //conf global de rutas
 app.use("/login", require("../routes/login"));
 app.use("/categoria", require("../routes/categoria"));
 app.use("/producto", require("../routes/producto"));
 app.use("/usuario", require("../routes/usuario"));
+app.use("/upload", require("../routes/upload"));
 //app.use(require("../routes/indexRoutes")); NO ME FUNCIONA => PONGO TODAS LAS RUTAS ACÁ
 
 mongoose.connect(
