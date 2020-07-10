@@ -5,7 +5,8 @@ const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 const verificarToken = (req, res, next) => {
-  const token = req.get("token");
+  const token = req.params.fileName ? req.query.token : req.get("token");
+
   if (token) {
     jwt.verify(token, process.env.SECRET_KEY, (err, payloadDecoded) => {
       if (err) return res.status(401).json({ auth: false, err });

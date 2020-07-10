@@ -1,4 +1,4 @@
-require("../config/config.js");
+require("./config/config");
 const path = require("path"); //sirve para gestionar paths
 const express = require("express");
 const mongoose = require("mongoose");
@@ -30,12 +30,12 @@ app.use(express.static(path.resolve(__dirname, "../public")));
 app.use(fileUpload({ useTempFiles: true }));
 
 //conf global de rutas
-app.use("/login", require("../routes/login"));
-app.use("/categoria", require("../routes/categoria"));
-app.use("/producto", require("../routes/producto"));
-app.use("/usuario", require("../routes/usuario"));
-app.use("/upload", require("../routes/upload"));
-//app.use(require("../routes/indexRoutes")); NO ME FUNCIONA => PONGO TODAS LAS RUTAS ACÁ
+app.use("/login", require("./routes/login"));
+app.use("/categoria", require("./routes/categoria"));
+app.use("/producto", require("./routes/producto"));
+app.use("/usuario", require("./routes/usuario"));
+app.use("/image", require("./routes/image"));
+//app.use(require("./routes/indexRoutes")); NO ME FUNCIONA => PONGO TODAS LAS RUTAS ACÁ
 
 mongoose.connect(
   process.env.URL_DB, //SI LA BD NO EXISTE LA CREA
